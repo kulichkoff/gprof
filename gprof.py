@@ -5,12 +5,12 @@ import tomllib # ! requires python 3.11
 
 
 @dataclass
-class GitPofile:
+class GitProfile:
   email: str
   name: str
 
 
-def change_profile(profile: GitPofile):
+def change_profile(profile: GitProfile):
   pass
 
 
@@ -35,7 +35,7 @@ def main():
     if certain_profile_config is None:
       print(f"Cannot find the profile with the name \"{profile_name}\"")
       return
-    profile = GitPofile(
+    profile = GitProfile(
       certain_profile_config.get("email"), 
       certain_profile_config.get("name")
     )
