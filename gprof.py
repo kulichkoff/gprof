@@ -1,6 +1,6 @@
-import sys
 import os
 from dataclasses import dataclass
+from argparse import ArgumentParser
 import tomllib # ! requires python 3.11
 
 
@@ -30,13 +30,11 @@ def get_profile_config(profile_name: str) -> GitProfile:
 
 
 def main():
-  # parse args
-  args = sys.argv[1:]
-  if len(args) != 1:
-    print("Usage:\n\tgprof [profile_name]")
-    return
+  parser = ArgumentParser(description="Change your Git profile easily")
+  parser.add_argument("profile_name", type=str, help="Git profile name in config")
+  args = vars(parser.parse_args())
   
-  profile_name = args[0]
+  profile_name = args.get('profile_name')
 
   try:
     profile = get_profile_config(profile_name)
