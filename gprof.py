@@ -11,11 +11,22 @@ class GitProfile:
 
 
 def change_profile(profile: GitProfile):
-  pass
+  os.system(f"git config --global --replace-all user.name \"{profile.name}\"")
+  os.system(f"git config --global --replace-all user.email \"{profile.email}\"")
 
 
-def get_profile_config(profile_name: str):
-   pass
+def get_profile_config(profile_name: str) -> GitProfile:
+  profiles_config_path = os.path.expanduser("~/.config/gprof/profiles")
+  with open(profiles_config_path, "rb") as file:
+    profiles_config = tomllib.load(file)
+    certain_profile_config = profiles_config.get(profile_name)
+    if certain_profile_config is None:
+      raise Exception(f"Cannot find profile with name \"{profile_name}\"")
+    return GitProfile(
+      certain_profile_config.get("email"), 
+      certain_profile_config.get("name")
+    )
+     
 
 
 def main():
@@ -27,21 +38,13 @@ def main():
   
   profile_name = args[0]
 
-  # load specific profile
-  profiles_config_path = os.path.expanduser("~/.config/gprof/profiles")
-  with open(profiles_config_path, "rb") as file:
-    profiles_config = tomllib.load(file)
-    certain_profile_config = profiles_config.get(profile_name)
-    if certain_profile_config is None:
-      print(f"Cannot find the profile with the name \"{profile_name}\"")
-      return
-    profile = GitProfile(
-      certain_profile_config.get("email"), 
-      certain_profile_config.get("name")
-    )
+  try:
+    profile = get_profile_config(profile_name)
+    change_profile(profile)
+  except Exception as err:
+    print("Could not change git profile:", err)
+    return
 
-  os.system(f"git config --global --replace-all user.name \"{profile.name}\"")
-  os.system(f"git config --global --replace-all user.email \"{profile.email}\"")
   print(f"\t> Changed your git profile to {profile.email}")
   
 
